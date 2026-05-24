@@ -63,7 +63,7 @@ npm run build
 
 ## 🌐 Live Demo
 
-[View Portfolio](https://your-vercel-link.vercel.app)
+[View Portfolio](https://portfolio-khalid-seven.vercel.app/)
 
 
 ## 📬 Contact
