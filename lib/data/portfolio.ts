@@ -51,7 +51,7 @@ export const portfolio: PortfolioData = {
   experiences: [
     {
       id: "bawana",
-      role: "Frontend UI Developer (Assistant Manager)",
+      role: "Frontend UI Developer",
       company: "PT. Bawana Margatama",
       client: "PT Adira Dinamika Multi Finance",
       period: "Jan 2024 – Dec 2024",
@@ -69,7 +69,7 @@ export const portfolio: PortfolioData = {
     },
     {
       id: "sejahtera",
-      role: "Frontend UI Developer (Assistant Manager)",
+      role: "Frontend UI Developer",
       company: "PT. Sejahtera Mitra Solusi",
       client: "PT Adira Dinamika Multi Finance",
       period: "Feb 2019 – Dec 2023",
@@ -85,7 +85,7 @@ export const portfolio: PortfolioData = {
     },
     {
       id: "cranium",
-      role: "Frontend Developer (Technical Leader)",
+      role: "Frontend Developer",
       company: "PT. Cranium Royal Aditama",
       period: "Jun 2016 – Feb 2019",
       startDate: "2016-06",
