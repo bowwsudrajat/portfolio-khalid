@@ -139,7 +139,7 @@ export function Hero() {
                 />
               </button>
               <a
-                href="/Kholid Sudrajat.pdf"
+                href="/Khalid_Sudrajat_Frontend_Developer_CV.pdf"
                 download
                 className="inline-flex items-center gap-2 border border-border px-8 py-4 font-heading text-[10px] font-bold tracking-widest text-foreground uppercase transition-all duration-300 hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 aria-label="Download CV PDF"
