@@ -1,168 +1,200 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Sun, Moon } from "lucide-react";
-import { useTheme } from "next-themes";
-import { useEffect } from "react";
-import { navLinks, portfolio } from "@/lib/data/portfolio";
-import { useActiveSection } from "@/hooks/use-active-section";
+import { useState, useEffect, useRef } from "react";
+import gsap from "gsap";
+import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+
+const navLinks = [
+  { href: "about", label: "ABOUT" },
+  { href: "projects", label: "WORK" },
+  { href: "experience", label: "EXPERIENCE" },
+  { href: "contact", label: "CONTACT" },
+] as const;
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const activeSection = useActiveSection();
-  const { theme, setTheme } = useTheme();
+  const [scrolled, setScrolled] = useState(false);
+  const menuOverlayRef = useRef<HTMLDivElement>(null);
+  const menuLinksRef = useRef<HTMLUListElement>(null);
 
-  useEffect(() => setMounted(true), []);
+  // Scroll state
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  const handleNavClick = (href: string) => {
+  // Mobile menu animation
+  useEffect(() => {
+    const overlay = menuOverlayRef.current;
+    if (!overlay) return;
+
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+      gsap.to(overlay, {
+        opacity: 1,
+        y: 0,
+        duration: 0.45,
+        ease: "power4.out",
+      });
+      if (menuLinksRef.current) {
+        gsap.fromTo(
+          menuLinksRef.current.querySelectorAll("li"),
+          { opacity: 0, y: 24 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.4,
+            stagger: 0.07,
+            ease: "power3.out",
+            delay: 0.1,
+          }
+        );
+      }
+    } else {
+      document.body.style.overflow = "";
+      gsap.to(overlay, {
+        opacity: 0,
+        y: "-100%",
+        duration: 0.35,
+        ease: "power3.in",
+      });
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    targetId: string
+  ) => {
+    e.preventDefault();
     setMobileOpen(false);
-    const id = href.replace("#", "");
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    setTimeout(() => {
+      document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth" });
+    }, mobileOpen ? 400 : 0);
   };
 
   return (
     <>
-      <motion.header
-        className="fixed left-0 right-0 top-6 z-50 flex justify-center px-4"
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+      <header
+        className={cn(
+          "fixed left-0 right-0 top-0 z-50 transition-all duration-300 px-6 md:px-12",
+          scrolled
+            ? "py-4 bg-background/85 backdrop-blur-md border-b border-border/30"
+            : "py-6 bg-transparent"
+        )}
+        role="banner"
       >
-        <nav
-          className={cn(
-            "flex w-full max-w-4xl items-center justify-between gap-4",
-            "rounded-2xl border border-border/60 bg-card/40 px-4 py-3 backdrop-blur-xl",
-            "shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)]"
-          )}
-          aria-label="Main navigation"
-        >
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
+
+          {/* Logo / home link */}
           <a
             href="#hero"
-            onClick={(e) => {
-              e.preventDefault();
-              handleNavClick("#hero");
-            }}
-            className="font-heading text-sm font-bold tracking-tight text-foreground"
+            onClick={(e) => handleNavClick(e, "hero")}
+            className="font-heading text-sm font-bold tracking-widest text-foreground uppercase transition-colors duration-300 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            aria-label="Khalid Sudrajat — home"
           >
-            KS<span className="text-primary">.</span>
+            KHALID SUDRAJAT
           </a>
 
-          <ul className="hidden items-center gap-1 md:flex">
-            {navLinks.map((link) => {
-              const sectionId = link.href.replace("#", "");
-              const isActive = activeSection === sectionId;
-              return (
-                <li key={link.href}>
-                  <a
-                    href={link.href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleNavClick(link.href);
-                    }}
-                    className={cn(
-                      "relative rounded-lg px-3 py-1.5 text-xs font-medium transition-colors",
-                      isActive ? "text-foreground" : "text-muted hover:text-foreground"
-                    )}
-                  >
-                    {link.label}
-                    {isActive && (
-                      <motion.span
-                        layoutId="nav-pill"
-                        className="absolute inset-0 -z-10 rounded-lg bg-primary/15 ring-1 ring-primary/30"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
-
-          <div className="flex items-center gap-2">
-            {mounted && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                aria-label="Toggle theme"
-              >
-                {theme === "dark" ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
-              </Button>
-            )}
-            <Button
-              variant="default"
-              size="sm"
-              className="hidden sm:inline-flex"
-              onClick={() => handleNavClick("#contact")}
-            >
-              Hire me
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              onClick={() => setMobileOpen(!mobileOpen)}
-              aria-label="Toggle menu"
-            >
-              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
-          </div>
-        </nav>
-      </motion.header>
-
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setMobileOpen(false)}
+          {/* Availability badge — desktop */}
+          <div
+            className="hidden items-center gap-2 border border-primary/20 bg-primary/5 px-3 py-1 text-[10px] font-bold tracking-widest text-primary md:flex"
+            aria-label="Availability status: available for work"
           >
-            <motion.div
-              className="absolute left-4 right-4 top-24 rounded-2xl border border-border bg-card/95 p-6 backdrop-blur-xl"
-              initial={{ opacity: 0, y: -20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.95 }}
-              transition={{ duration: 0.3 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <ul className="flex flex-col gap-2">
-                {navLinks.map((link, i) => (
-                  <motion.li
-                    key={link.href}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                  >
-                    <a
-                      href={link.href}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleNavClick(link.href);
-                      }}
-                      className="block rounded-lg px-4 py-3 text-base font-medium text-foreground hover:bg-primary/10"
-                    >
-                      {link.label}
-                    </a>
-                  </motion.li>
-                ))}
-              </ul>
-              <p className="mt-4 border-t border-border pt-4 text-center text-xs text-muted">
-                {portfolio.personal.title} · {portfolio.personal.location}
-              </p>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+            </span>
+            AVAILABLE FOR WORK
+          </div>
+
+          {/* Desktop nav */}
+          <nav aria-label="Primary navigation" className="hidden items-center gap-8 md:flex">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={`#${link.href}`}
+                onClick={(e) => handleNavClick(e, link.href)}
+                className="font-sans text-[11px] font-semibold tracking-widest text-secondary uppercase transition-colors duration-300 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+
+          {/* Hamburger — mobile */}
+          <button
+            type="button"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="flex items-center justify-center p-2 text-foreground transition-colors duration-300 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background md:hidden"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
+          >
+            {mobileOpen ? (
+              <X className="h-5 w-5" aria-hidden="true" />
+            ) : (
+              <Menu className="h-5 w-5" aria-hidden="true" />
+            )}
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile fullscreen menu */}
+      <div
+        id="mobile-menu"
+        ref={menuOverlayRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation menu"
+        className="fixed inset-0 z-[49] flex -translate-y-full flex-col justify-between bg-card px-8 pb-12 pt-28 opacity-0 md:hidden"
+      >
+        <div className="flex flex-col gap-10">
+          {/* Availability badge */}
+          <div className="self-start flex items-center gap-2 border border-primary/20 bg-primary/5 px-3 py-1 text-[10px] font-bold tracking-widest text-primary">
+            <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+            </span>
+            AVAILABLE FOR WORK
+          </div>
+
+          <ul
+            ref={menuLinksRef}
+            className="flex flex-col gap-5"
+            role="list"
+          >
+            {navLinks.map((link) => (
+              <li key={link.href}>
+                <a
+                  href={`#${link.href}`}
+                  onClick={(e) => handleNavClick(e, link.href)}
+                  className="font-heading text-4xl font-bold tracking-tight text-foreground uppercase transition-colors duration-300 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="flex flex-col gap-2 border-t border-border/20 pt-6">
+          <p className="text-[10px] tracking-widest text-muted uppercase">
+            CONTACT
+          </p>
+          <a
+            href="mailto:kholidsudrajat@gmail.com"
+            className="text-sm font-medium text-secondary-text transition-colors duration-300 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            kholidsudrajat@gmail.com
+          </a>
+        </div>
+      </div>
     </>
   );
 }

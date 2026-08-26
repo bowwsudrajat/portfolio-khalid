@@ -1,112 +1,186 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ArrowDown, Download, Sparkles } from "lucide-react";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ArrowDownRight, Download } from "lucide-react";
 import { portfolio } from "@/lib/data/portfolio";
-import { GradientText } from "@/components/effects/gradient-text";
-import { AnimatedGrid } from "@/components/effects/animated-grid";
-import { FloatingBlobs } from "@/components/effects/floating-blobs";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { useMousePosition } from "@/hooks/use-mouse-position";
+import { BlobSculpture } from "@/components/3d/blob-sculpture";
 
 export function Hero() {
   const { personal } = portfolio;
-  const { x, y } = useMousePosition();
-  const firstName = personal.name.split(" ")[0];
+  const containerRef = useRef<HTMLElement>(null);
+  const labelRef = useRef<HTMLSpanElement>(null);
+  const nameLineOneRef = useRef<HTMLDivElement>(null);
+  const nameLineTwoRef = useRef<HTMLDivElement>(null);
+  const descRef = useRef<HTMLParagraphElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    if (prefersReducedMotion) return;
+
+    const tl = gsap.timeline({ delay: 1.6 }); // After preloader
+
+    tl.fromTo(
+      labelRef.current,
+      { opacity: 0, y: -10 },
+      { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }
+    )
+      .fromTo(
+        nameLineOneRef.current,
+        { opacity: 0, y: 60, skewY: 4 },
+        { opacity: 1, y: 0, skewY: 0, duration: 1, ease: "power4.out" },
+        "-=0.3"
+      )
+      .fromTo(
+        nameLineTwoRef.current,
+        { opacity: 0, y: 60, skewY: 4 },
+        { opacity: 1, y: 0, skewY: 0, duration: 1, ease: "power4.out" },
+        "-=0.7"
+      )
+      .fromTo(
+        descRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
+        "-=0.4"
+      )
+      .fromTo(
+        ctaRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
+        "-=0.5"
+      )
+      .fromTo(
+        scrollIndicatorRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.6, ease: "power2.out" },
+        "-=0.2"
+      );
+  }, []);
+
+  const scrollToSection = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <section
       id="hero"
-      className="relative flex min-h-screen items-center justify-center overflow-hidden pt-28 pb-20"
+      ref={containerRef}
+      aria-label="Hero"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background pt-24 pb-12"
     >
-      <AnimatedGrid />
-      <FloatingBlobs />
-
-      {/* Mouse-follow spotlight */}
+      {/* Subtle grid background */}
       <div
-        className="pointer-events-none absolute inset-0 transition-opacity duration-300"
-        style={{
-          background: `radial-gradient(600px circle at ${x}px ${y}px, rgba(139,92,246,0.06), transparent 40%)`,
-        }}
+        aria-hidden="true"
+        className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,rgba(245,245,240,0.025)_1px,transparent_1px),linear-gradient(to_bottom,rgba(245,245,240,0.025)_1px,transparent_1px)] bg-[size:5rem_5rem]"
       />
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="flex flex-col items-center text-center"
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <Badge variant="glow" className="mb-8 gap-2 px-4 py-1.5">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-              </span>
-              Available for new opportunities
-            </Badge>
-          </motion.div>
+      <div className="mx-auto w-full max-w-7xl px-6 md:px-12">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-8">
 
-          <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-muted">
-            {personal.title} · {personal.location}
-          </p>
-
-          <h1 className="font-heading max-w-5xl text-5xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-6xl md:text-7xl lg:text-8xl">
-            Hi, I&apos;m{" "}
-            <GradientText as="span">{firstName}</GradientText>
-            <br />
-            I craft interfaces
-            <br />
-            <span className="text-muted">that feel </span>
-            <GradientText as="span">premium</GradientText>
-          </h1>
-
-          <motion.p
-            className="mt-8 max-w-2xl text-base leading-relaxed text-muted md:text-lg"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            {portfolio.summary.slice(0, 160)}...
-          </motion.p>
-
-          <motion.div
-            className="mt-10 flex flex-wrap items-center justify-center gap-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <Button
-              size="lg"
-              onClick={() =>
-                document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })
-              }
+          {/* Text block */}
+          <div className="flex flex-col items-start lg:col-span-7">
+            {/* Label */}
+            <span
+              ref={labelRef}
+              className="mb-5 text-[10px] font-bold tracking-[0.3em] text-primary uppercase opacity-0"
+              aria-label="Role"
             >
-              <Sparkles className="h-4 w-4" />
-              Let&apos;s work together
-            </Button>
-            <Button variant="secondary" size="lg" asChild>
-              <a href="/Kholid Sudrajat.pdf" download>
-                <Download className="h-4 w-4" />
-                Download CV
-              </a>
-            </Button>
-          </motion.div>
+              [ FRONTEND ENGINEER ]
+            </span>
 
-          <motion.div
-            className="mt-20 flex flex-col items-center gap-2 text-muted"
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            {/* Name */}
+            <h1 className="font-heading font-black leading-[0.88] tracking-tighter text-foreground uppercase">
+              <div
+                ref={nameLineOneRef}
+                className="overflow-hidden opacity-0"
+              >
+                <span className="block text-[clamp(4rem,14vw,11rem)]">
+                  KHALID
+                </span>
+              </div>
+              <div
+                ref={nameLineTwoRef}
+                className="overflow-hidden opacity-0"
+              >
+                <span className="block text-[clamp(4rem,14vw,11rem)] text-secondary-text">
+                  SUDRAJAT
+                </span>
+              </div>
+            </h1>
+
+            {/* Description */}
+            <p
+              ref={descRef}
+              className="mt-8 max-w-md font-sans text-sm leading-relaxed text-secondary-text tracking-wide opacity-0 md:text-base"
+            >
+              10+ YEARS OF CRAFTING PREMIUM DIGITAL EXPERIENCES WITH MODERN
+              JAVASCRIPT, REACT, AND CREATIVE TECHNOLOGY.
+            </p>
+
+            {/* CTA Buttons */}
+            <div
+              ref={ctaRef}
+              className="mt-10 flex flex-wrap items-center gap-4 opacity-0"
+            >
+              <button
+                type="button"
+                onClick={() => scrollToSection("contact")}
+                className="group inline-flex items-center gap-2 border border-primary bg-primary/5 px-8 py-4 font-heading text-[10px] font-bold tracking-widest text-primary uppercase transition-all duration-300 hover:bg-primary hover:text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                aria-label="Scroll to contact section"
+              >
+                START A CONVERSATION
+                <ArrowDownRight
+                  className="h-4 w-4 transition-transform group-hover:rotate-45"
+                  aria-hidden="true"
+                />
+              </button>
+              <a
+                href="/Kholid Sudrajat.pdf"
+                download
+                className="inline-flex items-center gap-2 border border-border px-8 py-4 font-heading text-[10px] font-bold tracking-widest text-foreground uppercase transition-all duration-300 hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                aria-label="Download CV PDF"
+              >
+                DOWNLOAD CV
+                <Download className="h-4 w-4" aria-hidden="true" />
+              </a>
+            </div>
+          </div>
+
+          {/* 3D Blob */}
+          <div
+            className="flex justify-center lg:col-span-5 lg:justify-end"
+            aria-hidden="true"
           >
-            <span className="text-xs uppercase tracking-widest">Scroll to explore</span>
-            <ArrowDown className="h-4 w-4" />
-          </motion.div>
-        </motion.div>
+            <BlobSculpture />
+          </div>
+
+        </div>
+
+        {/* Footer info bar */}
+        <div
+          ref={scrollIndicatorRef}
+          className="mt-16 flex items-center justify-between border-t border-border/20 pt-5 text-muted opacity-0"
+        >
+          <span className="text-[10px] font-bold tracking-widest uppercase">
+            BASED IN BEKASI, INDONESIA
+          </span>
+          <button
+            type="button"
+            onClick={() => scrollToSection("about")}
+            className="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase transition-colors duration-300 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+            aria-label="Scroll to about section"
+          >
+            SCROLL TO EXPLORE{" "}
+            <span className="animate-bounce" aria-hidden="true">
+              ↓
+            </span>
+          </button>
+        </div>
+
       </div>
     </section>
   );

@@ -1,21 +1,25 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────
+   Design Tokens
+───────────────────────────────────────────── */
 :root {
-  --background: #09090b;
-  --foreground: #fafafa;
-  --card: #111113;
-  --border: #27272a;
-  --primary: #8b5cf6;
-  --secondary: #06b6d4;
-  --muted: #a1a1aa;
-}
+  --background: #0A0A0A;
+  --foreground: #F5F5F0;
+  --card: #111111;
+  --border: rgba(245, 245, 240, 0.15);
+  --primary: #D9FF00;
+  --secondary: #A0A0A0;
+  --muted: #666666;
+  --secondary-text: #A0A0A0;
 
-.light {
-  --background: #fafafa;
-  --foreground: #09090b;
-  --card: #ffffff;
-  --border: #e4e4e7;
-  --muted: #71717a;
+  /* Spacing rhythm */
+  --section-padding-y: clamp(5rem, 10vw, 8rem);
+
+  /* Typography scale  */
+  --display-xxl: clamp(3.5rem, 10vw, 10rem);
+  --display-xl: clamp(2.5rem, 7vw, 7rem);
+  --display-lg: clamp(2rem, 5vw, 5rem);
 }
 
 @theme inline {
@@ -26,55 +30,160 @@
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
   --color-muted: var(--muted);
+  --color-secondary-text: var(--secondary-text);
   --font-sans: var(--font-inter), system-ui, sans-serif;
   --font-family-heading: var(--font-space-grotesk), system-ui, sans-serif;
+  --font-heading: var(--font-space-grotesk), system-ui, sans-serif;
 }
 
-* {
-  scroll-behavior: smooth;
+/* ─────────────────────────────────────────────
+   Base Reset
+───────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 html {
-  scroll-behavior: smooth;
+  /* Smooth scroll is handled by Lenis; native scroll-behavior can conflict */
+  scroll-behavior: auto;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
+/* ─────────────────────────────────────────────
+   Typography helpers
+───────────────────────────────────────────── */
+
+.font-heading {
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+}
+
+/* ─────────────────────────────────────────────
+   Selection
+───────────────────────────────────────────── */
+
 ::selection {
-  background: rgba(139, 92, 246, 0.3);
+  background: rgba(217, 255, 0, 0.25);
   color: var(--foreground);
 }
 
-/* Glassmorphism card utility */
+/* ─────────────────────────────────────────────
+   Focus visible — accessible, on-brand
+───────────────────────────────────────────── */
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+/* Remove default outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ─────────────────────────────────────────────
+   Scrollbar
+───────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(245, 245, 240, 0.1);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* ─────────────────────────────────────────────
+   Reduced Motion
+───────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Ensure text is immediately visible when GSAP animations are skipped */
+  .contact-line,
+  .project-block,
+  .experience-row,
+  .skill-category {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   Utility: glass card
+───────────────────────────────────────────── */
+
 .glass-card {
   border: 1px solid var(--border);
   background: color-mix(in srgb, var(--card) 60%, transparent);
   backdrop-filter: blur(12px);
 }
 
-.light .glass-card {
-  background: color-mix(in srgb, var(--card) 80%, transparent);
-  box-shadow: 0 4px 24px -8px rgba(0, 0, 0, 0.08);
+/* ─────────────────────────────────────────────
+   Utility: no-cursor (applied when custom cursor is active)
+───────────────────────────────────────────── */
+
+.has-custom-cursor,
+.has-custom-cursor * {
+  cursor: none !important;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
+/* ─────────────────────────────────────────────
+   Utility: scrollbars
+───────────────────────────────────────────── */
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(217, 255, 0, 0.4) rgba(255, 255, 255, 0.05);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--background);
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--border);
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(217, 255, 0, 0.3);
   border-radius: 3px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--primary);
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 255, 0, 0.7);
 }

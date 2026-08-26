@@ -134,65 +134,105 @@ export const portfolio: PortfolioData = {
       name: "Ofi Internet",
       description:
         "Modern web experience built with a performance-first frontend stack.",
+      detailedDescription:
+        "Modern web experience built with a performance-first frontend stack, delivering a blazing-fast user journey, seamless service coverage checking, and clean layout architecture for high-speed fiber internet providers.",
+      websiteUrl: "https://www.ofi.id/",
       techStack: ["Next.js", "Tailwind CSS"],
       featured: true,
+      year: "2024",
+      role: "Frontend UI Developer",
     },
     {
       id: "momobil",
       name: "Momobil",
       description:
         "Automotive platform UI evolved from Ember.js to a modern React-based architecture.",
+      detailedDescription:
+        "Automotive platform UI successfully evolved from a legacy Ember.js & Bootstrap stack into a high-performance, modern React/Next.js architecture for a smoother user experience, dynamic car catalog browsing, and intuitive financing simulations.",
+      websiteUrl: "https://www.momobil.id/",
       techStack: ["Ember.js", "Bootstrap", "Next.js", "Tailwind CSS"],
       featured: true,
       migration: "Ember.js & Bootstrap → Next.js & Tailwind CSS",
+      year: "2023",
+      role: "Frontend UI Developer",
     },
     {
       id: "gopayday",
       name: "Gopayday",
       description:
         "Financial product interface with responsive layouts and interactive components.",
+      detailedDescription:
+        "Financial product interface and interactive online festival platform designed with responsive layouts and vibrant promotional banners to ensure seamless, secure user interactions in large-scale campaigns.",
+      websiteUrl: "https://gopayonlinefestival.com/",
       techStack: ["HTML", "CSS", "Bootstrap", "jQuery"],
       featured: false,
+      year: "2021",
+      role: "Frontend Developer",
     },
     {
       id: "halodoc",
       name: "Halodoc",
       description:
         "Healthcare digital product UI with component-driven Angular interfaces.",
+      detailedDescription:
+        "Healthcare digital product UI featuring component-driven interfaces built for reliability, medical service clarity, and accessible user experiences in digital health.",
+      websiteUrl: "https://www.halodoc.com/",
       techStack: ["Angular", "Bootstrap"],
       featured: false,
+      year: "2020",
+      role: "Frontend Developer",
     },
     {
       id: "amnaya",
       name: "Amnaya Hotel",
       description:
         "Hospitality booking and content platform powered by Laravel backend integration.",
+      detailedDescription:
+        "Hospitality booking and content platform optimized for guest engagement and visual elegance, powered by robust Laravel backend integration.",
+      websiteUrl: "https://www.amnayahotels.com/",
       techStack: ["Laravel", "Bootstrap"],
       featured: false,
+      year: "2018",
+      role: "Frontend Developer",
     },
     {
       id: "futuready",
       name: "Futuready",
       description:
         "Corporate web platform with structured content and responsive design patterns.",
+      detailedDescription:
+        "Corporate web platform built with structured content management and responsive design patterns for clear financial and insurance information delivery.",
+      websiteUrl: "https://www.futuready.com/",
       techStack: ["Laravel", "Bootstrap"],
       featured: false,
+      year: "2017",
+      role: "Frontend Developer",
     },
     {
       id: "gamorugi",
       name: "Gamorugi",
       description:
         "Brand-focused web presence with custom Laravel-powered CMS workflows.",
+      detailedDescription:
+        "Brand-focused web presence featuring custom CMS workflows and smooth layouts tailored to elevate brand identity and food promo discovery.",
+      websiteUrl: "https://www.gamorugi.com/",
       techStack: ["Laravel", "Bootstrap"],
       featured: false,
+      year: "2016",
+      role: "Frontend Developer",
     },
     {
       id: "suzanna",
       name: "Suzanna Babyshop",
       description:
         "E-commerce storefront with catalog browsing and conversion-focused UI.",
+      detailedDescription:
+        "E-commerce storefront and wholesale catalog platform optimized for effortless baby product browsing, structured pricing navigation, and a conversion-focused UI.",
+      websiteUrl: "https://suzannababyshop.com/",
       techStack: ["Laravel", "Bootstrap"],
       featured: false,
+      year: "2015",
+      role: "Web Designer & Developer",
     },
   ],
   additionalInfo: [

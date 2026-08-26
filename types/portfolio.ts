@@ -28,11 +28,15 @@ export interface Project {
   id: string;
   name: string;
   description: string;
+  detailedDescription?: string;
+  websiteUrl?: string;
   techStack: string[];
   featured: boolean;
   migration?: string;
   demoUrl?: string;
   githubUrl?: string;
+  year?: string;
+  role?: string;
 }
 
 export interface PortfolioData {

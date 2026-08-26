@@ -1,61 +1,69 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
-import { portfolio } from "@/lib/data/portfolio";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
 
 export function LoadingScreen() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [percent, setPercent] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1800);
-    return () => clearTimeout(timer);
+    // Prevent scrolling while loading
+    document.body.style.overflow = "hidden";
+
+    const obj = { value: 0 };
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const duration = prefersReducedMotion ? 0.3 : 1.2;
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        gsap.to(containerRef.current, {
+          yPercent: -100,
+          duration: prefersReducedMotion ? 0.3 : 0.8,
+          ease: "power4.inOut",
+          onComplete: () => {
+            setIsVisible(false);
+            document.body.style.overflow = "";
+          }
+        });
+      }
+    });
+
+    tl.to(obj, {
+      value: 100,
+      duration: duration,
+      ease: "power2.out",
+      onUpdate: () => {
+        setPercent(Math.floor(obj.value));
+      }
+    });
+
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, []);
 
+  if (!isVisible) return null;
+
   return (
-    <AnimatePresence>
-      {isLoading && (
-        <motion.div
-          className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-background"
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <motion.div
-            className="relative flex flex-col items-center gap-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <motion.div
-              className="h-12 w-12 rounded-xl border border-border bg-card"
-              animate={{
-                boxShadow: [
-                  "0 0 0 0 rgba(139,92,246,0)",
-                  "0 0 40px 0 rgba(139,92,246,0.4)",
-                  "0 0 0 0 rgba(139,92,246,0)",
-                ],
-              }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            />
-            <div className="text-center">
-              <p className="font-heading text-lg font-semibold text-foreground">
-                {portfolio.personal.name.split(" ")[0]}
-              </p>
-              <p className="text-sm text-muted">Loading portfolio</p>
-            </div>
-          </motion.div>
-          <motion.div
-            className="absolute bottom-16 h-1 w-48 overflow-hidden rounded-full bg-border"
-          >
-            <motion.div
-              className="h-full bg-gradient-to-r from-primary to-secondary"
-              initial={{ width: "0%" }}
-              animate={{ width: "100%" }}
-              transition={{ duration: 1.6, ease: "easeInOut" }}
-            />
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div
+      ref={containerRef}
+      className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-background"
+    >
+      <div className="flex flex-col items-start px-8">
+        <div className="font-heading text-8xl font-bold tracking-tighter text-primary select-none sm:text-9xl md:text-[12rem]">
+          {percent.toString().padStart(3, "0")}
+        </div>
+        <div className="mt-4 flex flex-col gap-1">
+          <p className="font-sans text-xs uppercase tracking-[0.3em] text-foreground font-semibold">
+            Khalid Sudrajat
+          </p>
+          <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-muted">
+            Interactive Frontend Engineer
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
