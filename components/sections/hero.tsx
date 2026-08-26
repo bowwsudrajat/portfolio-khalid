@@ -155,7 +155,7 @@ export function Hero() {
             className="flex justify-center lg:col-span-5 lg:justify-end"
             aria-hidden="true"
           >
-            <BlobSculpture />
+            {/* <BlobSculpture /> */}
           </div>
 
         </div>
